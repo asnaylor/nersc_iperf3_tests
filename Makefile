@@ -25,7 +25,7 @@ ifeq ($(USE_SRUN),true)
 	SERVER_CMD = srun --label --het-group=$(SERVER_HET) iperf3 -s $(SERVER_ARGS)
 	CLIENT_CMD = srun --het-group=$(CLIENT_HET) --overlap iperf3 -c $(SERVER_ADDR) $(CLIENT_ARGS) --json | python3 iperf3_parse.py
 	LB_CMD = srun --het-group=$(LB_HET) --overlap shifter --module=none --image=$(ENVOY_IMAGE) envoy -c 
-	SHUTDOWN_PATTERN = "srun.*iperf3.*-s"\
+	SHUTDOWN_PATTERN = "srun.*iperf3.*-s"
 	LB_SHUTDOWN_PATTERN = "srun.*envoy"
 else
 	SERVER_CMD = iperf3 -s $(SERVER_ARGS)
@@ -142,21 +142,7 @@ shutdown:
 	@echo "══════════════════════════════"
 	@echo ""
 	@echo "🔍 Looking for running iperf3 servers..."
-ifeq ($(USE_SRUN),true)
-	@echo "🎯 Target: SLURM iperf3 processes"
-	-@if pkill -f $(SHUTDOWN_PATTERN) 2>/dev/null; then \
-		echo "✅ SLURM iperf3 server stopped successfully"; \
-	else \
-		echo "ℹ️  No SLURM iperf3 server found running"; \
-	fi
-else
-	@echo "🎯 Target: Local iperf3 processes"
-	-@if pkill -f $(SHUTDOWN_PATTERN) 2>/dev/null; then \
-		echo "✅ Local iperf3 server stopped successfully"; \
-	else \
-		echo "ℹ️  No local iperf3 server found running"; \
-	fi
-endif
+	-@pkill -f $(SHUTDOWN_PATTERN)
 	@echo ""
 
 shutdown-lb:
@@ -164,21 +150,8 @@ shutdown-lb:
 	@echo "════════════════════════════════════"
 	@echo ""
 	@echo "🔍 Looking for running Envoy processes..."
-ifeq ($(USE_SRUN),true)
-	@echo "🎯 Target: SLURM Envoy processes"
-	-@if pkill -f $(LB_SHUTDOWN_PATTERN) 2>/dev/null; then \
-		echo "✅ SLURM Envoy load balancer stopped successfully"; \
-	else \
-		echo "ℹ️  No SLURM Envoy load balancer found running"; \
-	fi
-else
-	@echo "🎯 Target: Local Envoy processes"
-	-@if pkill -f $(LB_SHUTDOWN_PATTERN) 2>/dev/null; then \
-		echo "✅ Local Envoy load balancer stopped successfully"; \
-	else \
-		echo "ℹ️  No local Envoy load balancer found running"; \
-	fi
-endif
+	-@pkill -f $(LB_SHUTDOWN_PATTERN)
+	@echo ""
 	@echo "🧹 Cleaning up temporary config files..."
 	-@rm -f envoy-config.*.yaml 2>/dev/null || true
 	@echo "✅ Cleanup completed!"
