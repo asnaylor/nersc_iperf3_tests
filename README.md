@@ -6,6 +6,9 @@ A toolkit for testing network bandwidth using iperf3 through an Envoy load balan
 
 Test network performance across NERSC compute nodes by deploying iperf3 servers, an Envoy load balancer, and running bandwidth tests.
 
+> [!NOTE]  
+> The installed iperf3 version on NERSC is 3.5. iperf3 was made multi-threaded in version 3.16 (released December 2023), which helps achieve better throughput when you are core limited (often the case for 40G or 100G hosts) by allowing parallel streams (`-P`) to use multiple cores. You can download a newer version from iperf [github](https://github.com/esnet/iperf).
+
 ## 🚀 Quick Start
 
 ### 1. Setup Environment

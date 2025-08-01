@@ -13,6 +13,7 @@ SERVER_HET ?= 0
 CLIENT_HET ?= 1
 LB_HET ?= 2
 USE_SRUN ?= true
+IPERF_BINARY ?= iperf3
 SERVER_ADDR ?= 
 SERVER_ARGS ?= 
 CLIENT_ARGS ?= 
@@ -22,14 +23,14 @@ LB_PORT ?= 9191
 
 # Conditional command definitions
 ifeq ($(USE_SRUN),true)
-	SERVER_CMD = srun --label --het-group=$(SERVER_HET) iperf3 -s $(SERVER_ARGS)
-	CLIENT_CMD = srun --het-group=$(CLIENT_HET) --overlap iperf3 -c $(SERVER_ADDR) $(CLIENT_ARGS) --json | python3 iperf3_parse.py
+	SERVER_CMD = srun --label --het-group=$(SERVER_HET) $(IPERF_BINARY) -s $(SERVER_ARGS)
+	CLIENT_CMD = srun --het-group=$(CLIENT_HET) --overlap $(IPERF_BINARY) -c $(SERVER_ADDR) $(CLIENT_ARGS) --json | python3 iperf3_parse.py
 	LB_CMD = srun --het-group=$(LB_HET) --overlap shifter --module=none --image=$(ENVOY_IMAGE) envoy -c 
 	SHUTDOWN_PATTERN = "srun.*iperf3.*-s"
 	LB_SHUTDOWN_PATTERN = "srun.*envoy"
 else
-	SERVER_CMD = iperf3 -s $(SERVER_ARGS)
-	CLIENT_CMD = iperf3 -c $(SERVER_ADDR) $(CLIENT_ARGS) --json | python3 iperf3_parse.py
+	SERVER_CMD = $(IPERF_BINARY) -s $(SERVER_ARGS)
+	CLIENT_CMD = $(IPERF_BINARY) -c $(SERVER_ADDR) $(CLIENT_ARGS) --json | python3 iperf3_parse.py
 	LB_CMD = shifter --module=none --image=$(ENVOY_IMAGE) envoy -c 
 	SHUTDOWN_PATTERN = "iperf3.*-s"
 	LB_SHUTDOWN_PATTERN = "envoy"
@@ -60,6 +61,7 @@ help:
 	@echo "   CLIENT_HET   🏷️  Client het group (default: $(CLIENT_HET))"
 	@echo "   LB_HET       🏷️  Load balancer het group (default: $(LB_HET))"
 	@echo "   USE_SRUN     🔧 Use srun command (default: $(USE_SRUN))"
+	@echo "   IPERF_BINARY 🔧 iperf3 binary path (default: $(IPERF_BINARY))"
 	@echo "   SERVER_ADDR  🌐 Server address (default: $(SERVER_ADDR))"
 	@echo "   SERVER_ARGS  📝 iperf3 server arguments (default: $(SERVER_ARGS))"
 	@echo "   CLIENT_ARGS  📝 iperf3 client arguments (default: $(CLIENT_ARGS))"
@@ -72,6 +74,7 @@ help:
 	@echo "   make client SERVER_ADDR=node01 CLIENT_ARGS='-t 30 -P 4'"
 	@echo "   make lb LB_NODES='node01:5201,node02:5201,node03:5201'"
 	@echo "   make client SERVER_ADDR=localhost:8080 CLIENT_ARGS='-t 60'"
+	@echo "   make server IPERF_BINARY='/usr/local/bin/iperf3-custom'"
 	@echo ""
 
 server: 
