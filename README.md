@@ -54,6 +54,29 @@ make client SERVER_ADDR=nid001235 CLIENT_ARGS="-p 9191 -P 2"
 
 Run `make help` for detailed usage information and more examples.
 
+## 📊 Performance Results
+
+**Test Environment:**
+- **System**: NERSC Perlmutter
+- **Date**: August 2025
+- **iperf3 Version**: 3.19.1
+- **Test Parameters**: 10 second duration (-t 10), 1 second intervals (-i 1)
+
+### Direct Connections
+| Connection | Single Stream | Multi-Stream (16×) |
+|------------|---------------|-------------------|
+| **Node A → Node B** | 20.6 Gbps | **87.6 Gbps** |
+| **DTN → Node B** | **29.1 Gbps** | - |
+
+### Through Load Balancer
+| Connection | Single Stream | Multi-Stream (16×) |
+|------------|---------------|-------------------|
+| **Node A → Node B** | 14.9 Gbps | **84.0 Gbps** |
+| **DTN → Node B** | **15.1 Gbps** | - |
+
+> [!NOTE]  
+> These are simple baseline tests. Performance may vary. DTN nodes are expected to benefit significantly from multi-streaming similar to compute nodes.
+
 ## 📊 Optional: Metrics Monitoring
 
 For users who want to monitor system and network metrics during testing, see the [NERSC metrics scripts](https://github.com/asnaylor/nersc-metrics-scripts) that deploy Prometheus, Grafana, and collectors:
