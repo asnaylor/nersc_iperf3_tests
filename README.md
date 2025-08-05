@@ -56,26 +56,15 @@ Run `make help` for detailed usage information and more examples.
 
 ## 📊 Performance Results
 
-**Test Environment:**
-- **System**: NERSC Perlmutter
-- **Date**: August 2025
-- **iperf3 Version**: 3.19.1
-- **Test Parameters**: 10 second duration (-t 10), 1 second intervals (-i 1)
-
-### Direct Connections
-| Connection | Single Stream | Multi-Stream (16×) |
-|------------|---------------|-------------------|
-| **Node A → Node B** | 20.6 Gbps | **87.6 Gbps** |
-| **DTN → Node B** | **29.1 Gbps** | - |
-
-### Through Load Balancer
-| Connection | Single Stream | Multi-Stream (16×) |
-|------------|---------------|-------------------|
-| **Node A → Node B** | 14.9 Gbps | **84.0 Gbps** |
-| **DTN → Node B** | **15.1 Gbps** | - |
+**Peak Performance Observed (NERSC Perlmutter, August 2025):**
+- **Multi-stream (16×) delivered 100+ Gbps**: For both Compute-to-Compute (105.7 Gbps) and DTN-to-Compute (98.3 Gbps) setups
+- **Load balancer performance nearly identical**: 90+ Gbps through LB vs 100+ Gbps direct
+- **DTN nodes perform well**: 98+ Gbps with multi-streaming
+- **Single streams limited**: ~20 Gbps max
 
 > [!NOTE]  
-> These are simple baseline tests. Performance may vary. DTN nodes are expected to benefit significantly from multi-streaming similar to compute nodes.
+> These are simple iperf3 baseline tests. Results represent peak observed performance. Your application performance might vary.
+
 
 ## 📊 Optional: Metrics Monitoring
 
